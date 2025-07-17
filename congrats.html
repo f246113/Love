@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>She Said YES! 💖</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom right, #fff0f5, #ffe4e1);
+      color: #ff1493;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    video, canvas {
+      margin-top: 1rem;
+      width: 320px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 20, 147, 0.3);
+    }
+
+    .btn {
+      background: #ff69b4;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.4rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      margin: 0.5rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #ff1493;
+    }
+
+    #status {
+      font-size: 1rem;
+      margin-top: 1rem;
+      color: #d63384;
+    }
+
+    #canvas {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 She Said YES! 💖</h1>
+  <p>Capture your beautiful joy and share the moment! 😍</p>
+
+  <video id="video" autoplay playsinline></video><br>
+  <button class="btn" id="snap">📸 Take Beautiful Selfie</button>
+  <button class="btn" id="sendBtn" style="display:none;">💌 Send on WhatsApp</button>
+  <p id="status">Waiting for your magical smile...</p>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const snap = document.getElementById("snap");
+    const sendBtn = document.getElementById("sendBtn");
+    const ctx = canvas.getContext("2d");
+    const status = document.getElementById("status");
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert("Please allow camera access to capture this sweet moment!");
+      });
+
+    snap.addEventListener("click", () => {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      // Apply fun filter
+      ctx.filter = "brightness(1.1) contrast(1.1) saturate(1.4)";
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      ctx.filter = "none";
+      ctx.font = "48px Poppins";
+      ctx.fillStyle = "#ff69b4";
+      ctx.fillText("💖💍💫", 20, 70);
+
+      canvas.style.display = "block";
+      status.textContent = "✅ Beautiful selfie captured!";
+
+      const link = document.createElement("a");
+      link.download = "yes-selfie.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+
+      sendBtn.style.display = "inline-block";
+    });
+
+    sendBtn.addEventListener("click", () => {
+      const number = "923441648112";
+      const message = encodeURIComponent("Hey! I just took this beautiful selfie after your YES! 💖📸✨\n(Attaching the photo now!)");
+      window.open(`https://wa.me/${number}?text=${message}`, "_blank");
+      alert("WhatsApp chat opened. Please attach the selfie manually.");
+    });
+
+    // 🚨 Send notification to Google Apps Script when page loads
+    fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ response: "YES" })
+    });
+  </script>
+</body>
+</html>

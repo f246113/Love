@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>💔 Sad Selfie Cam</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom right, #2c3e50, #3b4b5e);
+      color: #fff;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    video, canvas {
+      margin-top: 1rem;
+      width: 320px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.4rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      margin: 0.5rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #c0392b;
+    }
+
+    #status {
+      font-size: 1rem;
+      margin-top: 1rem;
+      color: #ffb6c1;
+    }
+
+    #canvas {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>💔 Rejected...</h1>
+  <p>Take a selfie to remember this tragic heartbreak 😢</p>
+
+  <video id="video" autoplay playsinline></video><br>
+  <button class="btn" id="snap">💔 Take Sad Selfie</button>
+  <button class="btn" id="sendBtn" style="display:none;">📤 Send on WhatsApp</button>
+
+  <p id="status">📸 Waiting to capture the pain...</p>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const snap = document.getElementById("snap");
+    const sendBtn = document.getElementById("sendBtn");
+    const ctx = canvas.getContext("2d");
+    const status = document.getElementById("status");
+
+    const sadQuotes = [
+      "It was never meant to be 💔",
+      "She said no... again 😢",
+      "One more tear for the record 🎭",
+      "My heart skipped a beat... and fell 💧",
+      "Pain looks good on me, right? 🥀"
+    ];
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert("Camera access denied 💔");
+      });
+
+    snap.addEventListener("click", () => {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      ctx.filter = "grayscale(100%) brightness(0.85) contrast(1.2)";
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      ctx.filter = "none";
+      ctx.font = "22px Poppins";
+      ctx.fillStyle = "white";
+      const quote = sadQuotes[Math.floor(Math.random() * sadQuotes.length)];
+      ctx.fillText(quote, 20, canvas.height - 30);
+
+      canvas.style.display = "block";
+      status.textContent = "📸 You captured your heartbreak...";
+
+      const link = document.createElement("a");
+      link.download = "sad-selfie.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+
+      sendBtn.style.display = "inline-block";
+    });
+
+    sendBtn.addEventListener("click", () => {
+      const number = "923441648112";
+      const message = encodeURIComponent("💔 Just took the saddest selfie... Please send virtual hugs.");
+      window.open(`https://wa.me/${number}?text=${message}`, "_blank");
+      alert("WhatsApp chat opened. Please attach the selfie manually.");
+    });
+
+    // 🚨 Send notification to Google Apps Script when page loads
+    fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ response: "NO" })
+    });
+  </script>
+</body>
+</html>

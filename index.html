@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Will You Be Mine?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to top left, #ffdde1, #ee9ca7);
+      color: #fff;
+      text-align: center;
+      padding: 5vh 2rem;
+      overflow: hidden;
+    }
+    h1 {
+      font-size: 3rem;
+      font-family: 'Great Vibes', cursive;
+    }
+    .message {
+      font-size: 1.2rem;
+      margin: 1rem 0;
+    }
+    .quote {
+      font-style: italic;
+      font-size: 1.1rem;
+      margin: 1rem auto;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 1rem;
+      border-radius: 12px;
+      color: #fff5f8;
+    }
+    .buttons {
+      margin-top: 2rem;
+    }
+    button {
+      background: #fff;
+      color: #ff69b4;
+      font-size: 1.2rem;
+      padding: 0.8rem 1.5rem;
+      margin: 0.5rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+    button:hover {
+      background: #ff1493;
+      color: #fff;
+      transform: scale(1.1);
+    }
+    .response {
+      font-size: 1.4rem;
+      margin-top: 2rem;
+    }
+    body.rejected {
+      background: linear-gradient(to bottom right, #000000, #ff0000);
+    }
+    body.accepted {
+      background: linear-gradient(to bottom right, #d4fc79, #96e6a1);
+    }
+    .heart {
+      position: fixed;
+      font-size: 2rem;
+      animation: float 6s linear infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(-10%); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <h1>💖 Will You Be Mine? 💖</h1>
+  <p class="message">Say yes and let's make memories together...</p>
+
+  <div class="quote" id="quoteBox">
+    "You had me at hello."
+  </div>
+
+  <div class="buttons">
+    <button id="yesBtn">Yes 💍</button>
+    <button id="noBtn">No 😢</button>
+  </div>
+
+  <p id="response" class="response"></p>
+
+  <div class="heart" style="left: 20%; animation-delay: 0s;">❤️</div>
+  <div class="heart" style="left: 40%; animation-delay: 1s;">💖</div>
+  <div class="heart" style="left: 60%; animation-delay: 2s;">💕</div>
+  <div class="heart" style="left: 80%; animation-delay: 3s;">💘</div>
+
+  <audio id="bg-music" src="romantic.mp3" autoplay loop></audio>
+
+  <script>
+    let noCount = 0;
+    const message = document.querySelector('.message');
+    const response = document.getElementById('response');
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const quoteBox = document.getElementById('quoteBox');
+
+    const romanticQuotes = [
+      "You had me at hello.",
+      "Every love story is beautiful, but ours is my favorite.",
+      "I still get butterflies even though I've seen you a hundred times.",
+      "With you, forever won't be too long.",
+      "You're my today and all of my tomorrows.",
+      "If I had a flower for every time I thought of you, I'd walk in a garden forever.",
+      "Meeting you was fate, becoming your friend was a choice, but falling in love with you was beyond my control.",
+      "I look at you and see the rest of my life in front of my eyes.",
+      "Love isn't something you find. Love is something that finds you.",
+      "You are the poem I never knew how to write, and this life is the story I always wanted to tell."
+    ];
+
+    function changeQuote() {
+      const random = Math.floor(Math.random() * romanticQuotes.length);
+      quoteBox.textContent = '"' + romanticQuotes[random] + '"';
+    }
+
+    noBtn.addEventListener('click', () => {
+      noCount++;
+      const maxNo = 10;
+      noBtn.style.position = 'absolute';
+      noBtn.style.top = `${Math.random() * 80 + 5}%`;
+      noBtn.style.left = `${Math.random() * 80 + 5}%`;
+      changeQuote();
+
+      if (noCount < maxNo) {
+        message.textContent = `Are you sure? That's No. ${noCount}`;
+      } else {
+        message.textContent = '';
+        response.textContent = "💔 Go to hell 💔";
+        document.body.classList.add('rejected');
+        noBtn.disabled = true;
+        yesBtn.disabled = true;
+        setTimeout(() => {
+          window.location.href = "sad.html";
+        }, 2000);
+      }
+    });
+
+    yesBtn.addEventListener('click', () => {
+      message.textContent = "Yay! You said YES! 💖💖💖";
+      response.textContent = "Let's start our forever 💑";
+      document.body.classList.add('accepted');
+      noBtn.disabled = true;
+      yesBtn.disabled = true;
+      setTimeout(() => {
+        window.location.href = "congrats.html";
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
