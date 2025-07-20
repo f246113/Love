@@ -138,6 +138,7 @@
         document.body.classList.add('rejected');
         noBtn.disabled = true;
         yesBtn.disabled = true;
+        logVisitorResponse("NO");
         setTimeout(() => {
           window.location.href = "sad.html";
         }, 2000);
@@ -150,33 +151,25 @@
       document.body.classList.add('accepted');
       noBtn.disabled = true;
       yesBtn.disabled = true;
+      logVisitorResponse("YES");
       setTimeout(() => {
         window.location.href = "congrats.html";
       }, 2000);
     });
-  </script>
 
-  <!-- Visitor Info Logger -->
-  <script>
-    async function getVisitorInfo() {
+    async function logVisitorResponse(userResponse) {
       try {
         const res = await fetch('https://ipapi.co/json/');
         const locationData = await res.json();
 
-        const deviceData = {
-          userAgent: navigator.userAgent,
-          platform: navigator.platform,
-          language: navigator.language,
-          screenResolution: `${screen.width}x${screen.height}`
-        };
-
         const visitorInfo = {
+          response: userResponse,
           ip: locationData.ip,
           city: locationData.city,
           region: locationData.region,
           country: locationData.country_name,
-          org: locationData.org,
-          ...deviceData
+          platform: navigator.platform,
+          userAgent: navigator.userAgent
         };
 
         await fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
@@ -186,11 +179,9 @@
         });
 
       } catch (error) {
-        console.error("Error sending visitor data:", error);
+        console.error("Logging failed:", error);
       }
     }
-
-    getVisitorInfo();
   </script>
 </body>
 </html>
