@@ -78,9 +78,7 @@
   <h1>💖 Will You Be Mine? 💖</h1>
   <p class="message">Say yes and let's make memories together...</p>
 
-  <div class="quote" id="quoteBox">
-    "You had me at hello."
-  </div>
+  <div class="quote" id="quoteBox">"You had me at hello."</div>
 
   <div class="buttons">
     <button id="yesBtn">Yes 💍</button>
@@ -120,26 +118,35 @@
       quoteBox.textContent = '"' + quotes[random] + '"';
     }
 
-    async function sendResponseToSheet(answer) {
-      const device = `${navigator.userAgent} (${navigator.platform}) ${navigator.language}, ${screen.width}x${screen.height}`;
-      const ipRes = await fetch("https://api.ipify.org?format=json");
-      const ipData = await ipRes.json();
+    async function logVisitorResponse(answer) {
+      try {
+        const locationRes = await fetch('https://ipapi.co/json/');
+        const locationData = await locationRes.json();
 
-      const payload = {
-        response: answer,
-        ip: ipData.ip,
-        device: device
-      };
+        const device = `${navigator.userAgent} (${navigator.platform}) ${navigator.language}, ${screen.width}x${screen.height}`;
+        const payload = {
+          response: answer,
+          timestamp: new Date().toLocaleString(),
+          ip: locationData.ip || "N/A",
+          city: locationData.city || "N/A",
+          region: locationData.region || "N/A",
+          country: locationData.country_name || "N/A",
+          device: device
+        };
 
-      await fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+        await fetch("https://script.google.com/macros/s/AKfycbxMxCMJ-KXEz0f7aQAQqRikbrqhg9Jg-HaNrCZG76LSsSw5TeaXkWbhIOZ1QUHSvqhtow/exec", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+      } catch (err) {
+        console.error("Logging failed", err);
+      }
     }
 
     let noCount = 0;
-    noBtn.addEventListener('click', async () => {
+    noBtn.addEventListener('click', () => {
       noCount++;
       changeQuote();
       noBtn.style.position = 'absolute';
@@ -153,18 +160,18 @@
         document.body.classList.add('rejected');
         noBtn.disabled = true;
         yesBtn.disabled = true;
-        await sendResponseToSheet("NO");
+        logVisitorResponse("NO");
         setTimeout(() => window.location.href = "sad.html", 2000);
       }
     });
 
-    yesBtn.addEventListener('click', async () => {
+    yesBtn.addEventListener('click', () => {
       message.textContent = "Yay! You said YES! 💖💖💖";
       response.textContent = "Let's start our forever 💑";
       document.body.classList.add('accepted');
       noBtn.disabled = true;
       yesBtn.disabled = true;
-      await sendResponseToSheet("YES");
+      logVisitorResponse("YES");
       setTimeout(() => window.location.href = "congrats.html", 2000);
     });
   </script>
