@@ -77,16 +77,14 @@
 <body>
   <h1>💖 Will You Be Mine? 💖</h1>
   <p class="message">Say yes and let's make memories together...</p>
-
   <div class="quote" id="quoteBox">"You had me at hello."</div>
-
   <div class="buttons">
     <button id="yesBtn">Yes 💍</button>
     <button id="noBtn">No 😢</button>
   </div>
-
   <p id="response" class="response"></p>
 
+  <!-- Hearts floating -->
   <div class="heart" style="left: 20%; animation-delay: 0s;">❤️</div>
   <div class="heart" style="left: 40%; animation-delay: 1s;">💖</div>
   <div class="heart" style="left: 60%; animation-delay: 2s;">💕</div>
@@ -117,11 +115,29 @@
     }
 
     async function logResponse(answer) {
-      await fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ response: answer })
-      });
+      try {
+        const res = await fetch('https://ipinfo.io/json?token=48eaf9a64e68f2');
+        const data = await res.json();
+
+        const deviceInfo = `${navigator.userAgent} (${navigator.platform}) ${navigator.language}, ${screen.width}x${screen.height}`;
+        const payload = {
+          response: answer,
+          timestamp: new Date().toLocaleString(),
+          ip: data.ip || "N/A",
+          city: data.city || "N/A",
+          region: data.region || "N/A",
+          country: data.country || "N/A",
+          device: deviceInfo
+        };
+
+        await fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {
+        console.error("Logging failed", e);
+      }
     }
 
     let noCount = 0;
