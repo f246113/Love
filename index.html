@@ -97,51 +97,73 @@
   <audio id="bg-music" src="romantic.mp3" autoplay loop></audio>
 
   <script>
-    let noCount = 0;
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
     const message = document.querySelector('.message');
     const response = document.getElementById('response');
-    const noBtn = document.getElementById('noBtn');
-    const yesBtn = document.getElementById('yesBtn');
     const quoteBox = document.getElementById('quoteBox');
 
-    const romanticQuotes = [
+    const quotes = [
       "You had me at hello.",
       "Every love story is beautiful, but ours is my favorite.",
-      "I still get butterflies even though I've seen you a hundred times.",
       "With you, forever won't be too long.",
       "You're my today and all of my tomorrows.",
-      "If I had a flower for every time I thought of you, I'd walk in a garden forever.",
-      "Meeting you was fate, becoming your friend was a choice, but falling in love with you was beyond my control.",
+      "I still get butterflies even though I've seen you a hundred times.",
+      "Meeting you was fate, becoming your friend was a choice, but falling in love was beyond my control.",
       "I look at you and see the rest of my life in front of my eyes.",
       "Love isn't something you find. Love is something that finds you.",
-      "You are the poem I never knew how to write, and this life is the story I always wanted to tell."
+      "If I had a flower for every time I thought of you, I'd walk in a garden forever."
     ];
 
     function changeQuote() {
-      const random = Math.floor(Math.random() * romanticQuotes.length);
-      quoteBox.textContent = '"' + romanticQuotes[random] + '"';
+      const random = Math.floor(Math.random() * quotes.length);
+      quoteBox.textContent = '"' + quotes[random] + '"';
     }
 
+    async function logVisitorResponse(answer) {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const locationData = await res.json();
+
+        const device = `${navigator.userAgent} (${navigator.platform}) ${navigator.language}, ${screen.width}x${screen.height}`;
+        const payload = {
+          response: answer,
+          timestamp: new Date().toLocaleString(),
+          ip: locationData.ip || "N/A",
+          city: locationData.city || "N/A",
+          region: locationData.region || "N/A",
+          country: locationData.country_name || "N/A",
+          device: device
+        };
+
+        await fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+      } catch (error) {
+        console.error("Error logging visitor info:", error);
+      }
+    }
+
+    let noCount = 0;
     noBtn.addEventListener('click', () => {
       noCount++;
-      const maxNo = 10;
+      changeQuote();
       noBtn.style.position = 'absolute';
       noBtn.style.top = `${Math.random() * 80 + 5}%`;
       noBtn.style.left = `${Math.random() * 80 + 5}%`;
-      changeQuote();
+      message.textContent = `Are you sure? That's No. ${noCount}`;
 
-      if (noCount < maxNo) {
-        message.textContent = `Are you sure? That's No. ${noCount}`;
-      } else {
+      if (noCount >= 10) {
         message.textContent = '';
         response.textContent = "💔 Go to hell 💔";
         document.body.classList.add('rejected');
         noBtn.disabled = true;
         yesBtn.disabled = true;
         logVisitorResponse("NO");
-        setTimeout(() => {
-          window.location.href = "sad.html";
-        }, 2000);
+        setTimeout(() => window.location.href = "sad.html", 2000);
       }
     });
 
@@ -152,36 +174,8 @@
       noBtn.disabled = true;
       yesBtn.disabled = true;
       logVisitorResponse("YES");
-      setTimeout(() => {
-        window.location.href = "congrats.html";
-      }, 2000);
+      setTimeout(() => window.location.href = "congrats.html", 2000);
     });
-
-    async function logVisitorResponse(userResponse) {
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        const locationData = await res.json();
-
-        const visitorInfo = {
-          response: userResponse,
-          ip: locationData.ip,
-          city: locationData.city,
-          region: locationData.region,
-          country: locationData.country_name,
-          platform: navigator.platform,
-          userAgent: navigator.userAgent
-        };
-
-        await fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(visitorInfo)
-        });
-
-      } catch (error) {
-        console.error("Logging failed:", error);
-      }
-    }
   </script>
 </body>
 </html>
