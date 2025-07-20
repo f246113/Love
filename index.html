@@ -120,35 +120,26 @@
       quoteBox.textContent = '"' + quotes[random] + '"';
     }
 
-    async function logVisitorResponse(answer) {
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        const locationData = await res.json();
+    async function sendResponseToSheet(answer) {
+      const device = `${navigator.userAgent} (${navigator.platform}) ${navigator.language}, ${screen.width}x${screen.height}`;
+      const ipRes = await fetch("https://api.ipify.org?format=json");
+      const ipData = await ipRes.json();
 
-        const device = `${navigator.userAgent} (${navigator.platform}) ${navigator.language}, ${screen.width}x${screen.height}`;
-        const payload = {
-          response: answer,
-          timestamp: new Date().toLocaleString(),
-          ip: locationData.ip || "N/A",
-          city: locationData.city || "N/A",
-          region: locationData.region || "N/A",
-          country: locationData.country_name || "N/A",
-          device: device
-        };
+      const payload = {
+        response: answer,
+        ip: ipData.ip,
+        device: device
+      };
 
-        await fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-      } catch (error) {
-        console.error("Error logging visitor info:", error);
-      }
+      await fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
     }
 
     let noCount = 0;
-    noBtn.addEventListener('click', () => {
+    noBtn.addEventListener('click', async () => {
       noCount++;
       changeQuote();
       noBtn.style.position = 'absolute';
@@ -162,18 +153,18 @@
         document.body.classList.add('rejected');
         noBtn.disabled = true;
         yesBtn.disabled = true;
-        logVisitorResponse("NO");
+        await sendResponseToSheet("NO");
         setTimeout(() => window.location.href = "sad.html", 2000);
       }
     });
 
-    yesBtn.addEventListener('click', () => {
+    yesBtn.addEventListener('click', async () => {
       message.textContent = "Yay! You said YES! 💖💖💖";
       response.textContent = "Let's start our forever 💑";
       document.body.classList.add('accepted');
       noBtn.disabled = true;
       yesBtn.disabled = true;
-      logVisitorResponse("YES");
+      await sendResponseToSheet("YES");
       setTimeout(() => window.location.href = "congrats.html", 2000);
     });
   </script>
