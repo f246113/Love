@@ -155,42 +155,42 @@
       }, 2000);
     });
   </script>
-<script>
-  async function getVisitorInfo() {
-    try {
-      const res = await fetch('https://ipapi.co/json/');
-      const locationData = await res.json();
 
-      const deviceData = {
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        language: navigator.language,
-        screenResolution: `${screen.width}x${screen.height}`
-      };
+  <!-- Visitor Info Logger -->
+  <script>
+    async function getVisitorInfo() {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const locationData = await res.json();
 
-      const visitorInfo = {
-        ip: locationData.ip,
-        city: locationData.city,
-        region: locationData.region,
-        country: locationData.country_name,
-        org: locationData.org,
-        ...deviceData
-      };
+        const deviceData = {
+          userAgent: navigator.userAgent,
+          platform: navigator.platform,
+          language: navigator.language,
+          screenResolution: `${screen.width}x${screen.height}`
+        };
 
-      // Send the collected data to your Google Sheet via Apps Script
-      await fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(visitorInfo)
-      });
+        const visitorInfo = {
+          ip: locationData.ip,
+          city: locationData.city,
+          region: locationData.region,
+          country: locationData.country_name,
+          org: locationData.org,
+          ...deviceData
+        };
 
-    } catch (error) {
-      console.error("Error sending visitor data:", error);
+        await fetch("https://script.google.com/macros/s/AKfycbx1MNVqh2zcoXK1Ba3e_KvgtDBEYIVjodkL3B6VZ6zKFhc2WuDx3_NHH1xPTu0UyECzVQ/exec", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(visitorInfo)
+        });
+
+      } catch (error) {
+        console.error("Error sending visitor data:", error);
+      }
     }
-  }
 
-  getVisitorInfo();
-</script>
-
+    getVisitorInfo();
+  </script>
 </body>
 </html>
