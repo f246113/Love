@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Will You Be Mine?</title>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -92,8 +92,6 @@
   <div class="heart" style="left: 60%; animation-delay: 2s;">💕</div>
   <div class="heart" style="left: 80%; animation-delay: 3s;">💘</div>
 
-  <audio id="bg-music" src="romantic.mp3" autoplay loop></audio>
-
   <script>
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
@@ -118,34 +116,16 @@
       quoteBox.textContent = '"' + quotes[random] + '"';
     }
 
-    async function logVisitorResponse(answer) {
-      try {
-        const locationRes = await fetch('https://ipapi.co/json/');
-        const locationData = await locationRes.json();
-
-        const device = `${navigator.userAgent} (${navigator.platform}) ${navigator.language}, ${screen.width}x${screen.height}`;
-        const payload = {
-          response: answer,
-          timestamp: new Date().toLocaleString(),
-          ip: locationData.ip || "N/A",
-          city: locationData.city || "N/A",
-          region: locationData.region || "N/A",
-          country: locationData.country_name || "N/A",
-          device: device
-        };
-
-        await fetch("https://script.google.com/macros/s/AKfycbxMxCMJ-KXEz0f7aQAQqRikbrqhg9Jg-HaNrCZG76LSsSw5TeaXkWbhIOZ1QUHSvqhtow/exec", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-      } catch (err) {
-        console.error("Logging failed", err);
-      }
+    async function logResponse(answer) {
+      await fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ response: answer })
+      });
     }
 
     let noCount = 0;
+
     noBtn.addEventListener('click', () => {
       noCount++;
       changeQuote();
@@ -153,14 +133,13 @@
       noBtn.style.top = `${Math.random() * 80 + 5}%`;
       noBtn.style.left = `${Math.random() * 80 + 5}%`;
       message.textContent = `Are you sure? That's No. ${noCount}`;
-
       if (noCount >= 10) {
         message.textContent = '';
         response.textContent = "💔 Go to hell 💔";
         document.body.classList.add('rejected');
         noBtn.disabled = true;
         yesBtn.disabled = true;
-        logVisitorResponse("NO");
+        logResponse("NO");
         setTimeout(() => window.location.href = "sad.html", 2000);
       }
     });
@@ -171,7 +150,7 @@
       document.body.classList.add('accepted');
       noBtn.disabled = true;
       yesBtn.disabled = true;
-      logVisitorResponse("YES");
+      logResponse("YES");
       setTimeout(() => window.location.href = "congrats.html", 2000);
     });
   </script>
